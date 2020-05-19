@@ -63,9 +63,10 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
   }
 
   // Receive events
+  simpleChatAppHubHandler.receiveJoin = data => handleIncomingMessage({ userId: data.user.userId, dateTimeString: data.dateTimeString, message: `${data.user.firstName} ${data.user.lastName} joined the chat!` });
+  simpleChatAppHubHandler.receiveLeave = data => handleIncomingMessage({ userId: data.user.userId, dateTimeString: data.dateTimeString, message: `${data.user.firstName} ${data.user.lastName} left the chat!` });
   simpleChatAppHubHandler.receiveMessage = data => handleIncomingMessage(data);
   simpleChatAppHubHandler.receiveUsers = data => setUsers(data.users);
-
 
   return (
     <simpleChatAppContext.Provider value={{
@@ -80,5 +81,4 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
       {children}
     </simpleChatAppContext.Provider>
   )
-
 }

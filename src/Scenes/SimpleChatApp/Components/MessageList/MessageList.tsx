@@ -30,7 +30,7 @@ const useStyles = makeStyles({
 })
 
 export default function MessageList () {
-  const { currentUser, messageData, usersData } = useContext(simpleChatAppContext);
+  const { messageData, usersData } = useContext(simpleChatAppContext);
   const classes = useStyles(undefined);
   const ref = createRef<HTMLLIElement>();
 
@@ -46,7 +46,7 @@ export default function MessageList () {
     return (
       <ListItem
         ref={ref}
-        key={`${currentUser.userId}-${index}`}
+        key={`${messageData.userId}-${index}`}
         divider
       >
         <ListItemAvatar>
