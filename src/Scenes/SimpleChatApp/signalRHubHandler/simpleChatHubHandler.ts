@@ -2,13 +2,11 @@ import SignalRHubHandler from './signalRHubHandler';
 import { ISimpleChatClientReceiveColors, ISimpleChatClientReceiveMessage, ISimpleChatClientSendColor, ISimpleChatClientSendMessage, ISimpleChatClientReceiveUsers } from './signalRClient';
 
 export default class SimpleChatHubHandler extends SignalRHubHandler {
-  public receiveColors: (clientReceiveColorsEvent: ISimpleChatClientReceiveColors) => void;
   public receiveMessage: (clientReceiveMessageEvent: ISimpleChatClientReceiveMessage) => void;
   public receiveUsers: (clientReceiveUsersEvent: ISimpleChatClientReceiveUsers) => void;
 
   initializeEvents () {
     super.initializeEvents();
-    this.connection.on('ClientReceiveColors', (clientReceiveColorsEvent: ISimpleChatClientReceiveColors) => this.handleEvent(() => this.receiveColors(clientReceiveColorsEvent)));
     this.connection.on('ClientReceiveMessage', (clientReceiveMessageEvent: ISimpleChatClientReceiveMessage) => this.handleEvent(() => this.receiveMessage(clientReceiveMessageEvent)));
     this.connection.on('ClientReceiveUsers', (clientReceiveUsersEvent: ISimpleChatClientReceiveUsers) => this.handleEvent(() => this.receiveUsers(clientReceiveUsersEvent)));
   }

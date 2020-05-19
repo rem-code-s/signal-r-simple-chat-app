@@ -14,7 +14,6 @@ export default abstract class SignalRHubHandler {
   }
 
   async initialize (data: IUser) {
-
     this.sessionInfo = data;
 
     this.connection = new signalR.HubConnectionBuilder().withUrl(`http://sandbox.noahstolk.com/${this.hubId}?group_name=default`, { skipNegotiation: true, transport: HttpTransportType.WebSockets }).build();
@@ -57,14 +56,5 @@ export default abstract class SignalRHubHandler {
     }
   }
 
-  protected initializeEvents () {
-    this.connection.on('ClientReceiveJoin', (parameters: IUser) => this.clientReceiveJoin(parameters));
-    this.connection.on('ClientReceiveLeave', (parameters: IUser) => this.clientReceiveLeave(parameters));
-  }
-
-  private clientReceiveJoin (_sessionInfo: IUser) {
-  }
-
-  private clientReceiveLeave (_sessionInfo: IUser) {
-  }
+  protected initializeEvents () { }
 }
