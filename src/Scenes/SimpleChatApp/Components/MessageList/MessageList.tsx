@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function MessageList () {
-  const { currentUser, messageData, usersData } = useContext(simpleChatAppContext);
+  const { currentUser, messageData } = useContext(simpleChatAppContext);
   const classes = useStyles(undefined);
   const ref = createRef<HTMLLIElement>();
 
@@ -43,48 +43,26 @@ export default function MessageList () {
     });
   })
 
-  function renderCurrentUser () {
-    if (!currentUser) {
-      return null;
-    }
-    return (
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar
-            style={{ background: currentUser?.color }}
-          >
-            {currentUser?.avatar ?? `${currentUser?.firstName[0].toUpperCase()}${currentUser?.lastName[0].toUpperCase()}`}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          style={{ color: '#fff' }}
-          primary={`${currentUser?.firstName} ${currentUser?.lastName}`}
-        />
-      </ListItem>
-    )
-  }
-
   function renderMessage (messageData: IMessage, index: number) {
-    const user = usersData.find(u => u.userId === messageData.userId);
     if (messageData.userId === currentUser.userId && messageData.isJoinOrLeaveMessage) {
       return null;
     }
 
     return (
       <ListItem
-        style={{ background: messageData?.isJoinOrLeaveMessage && user?.color }}
+        style={{ background: messageData?.isJoinOrLeaveMessage && messageData?.color }}
         ref={ref}
         key={`${messageData.userId}-${index}`}
         divider
       >
         <ListItemAvatar>
-          <Avatar style={{ background: user?.color }}>
-            {user?.avatar ?? `${user?.firstName[0].toUpperCase()}${user?.lastName[0].toUpperCase()}`}
+          <Avatar style={{ background: messageData?.color }}>
+            {messageData?.avatar ?? `${messageData?.firstName[0].toUpperCase()}${messageData?.lastName[0].toUpperCase()}`}
           </Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={messageData.message}
-          secondary={!messageData?.isJoinOrLeaveMessage ? `${user?.firstName} ${user?.lastName} - ${messageData.dateTimeString.split(' ')[1]}` : null}
+          secondary={!messageData?.isJoinOrLeaveMessage ? `${messageData?.firstName} ${messageData?.lastName} - ${messageData.dateTimeString.split(' ')[1]}` : null}
         />
       </ListItem>
     );
@@ -111,16 +89,11 @@ export default function MessageList () {
   return (
     <Box className={classes.container}>
       <Toolbar style={{ background: '#B6BD00' }}>
-        <Box flexGrow={1}>
-          <Hidden smUp>
-            <Typography variant="h6" className={classes.title}>
-              Jem-chat
+        <Hidden smUp>
+          <Typography variant="h6" className={classes.title}>
+            Jem-chat
           </Typography>
-          </Hidden>
-        </Box>
-        <Box>
-          {renderCurrentUser()}
-        </Box>
+        </Hidden>
       </Toolbar>
       <Box className={classes.messagesContainer}>
         {renderMessages()}

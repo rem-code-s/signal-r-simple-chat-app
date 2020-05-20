@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
-import { List, ListItem, ListItemIcon, Avatar, ListItemText, makeStyles, Typography, Toolbar } from '@material-ui/core';
+import React, { useContext, useState } from 'react';
+import { List, ListItem, ListItemIcon, Avatar, ListItemText, makeStyles, Typography, Toolbar, ListItemAvatar } from '@material-ui/core';
 import { simpleChatAppContext } from 'Scenes/SimpleChatApp/Context/SimpleChatAppContext';
 import { IUser } from 'Scenes/SimpleChatApp/signalRHubHandler/signalRClient';
+import AvatarSelector from '../MessageList/Components/AvatarSelector/AvatarSelector';
 
 const useStyles = makeStyles({
   list: {
@@ -16,7 +17,9 @@ const useStyles = makeStyles({
 
 export default function UserList () {
   const classes = useStyles(undefined);
-  const { currentUser, sendLeaveEvent, usersData } = useContext(simpleChatAppContext);
+  const { currentUser, sendLeaveEvent, usersData, sendColorEvent, sendAvatarEvent } = useContext(simpleChatAppContext);
+  const [avatarSelectionOpen, setAvatarSelectionOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   // these functions don't work for firefox
   window.onbeforeunload = function () {
@@ -27,9 +30,40 @@ export default function UserList () {
     sendLeaveEvent();
   }
 
+  function handleAvatarClick (event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    setAnchorEl(event.currentTarget);
+    setAvatarSelectionOpen(true)
+  }
+
+  function renderCurrentUser () {
+    if (!currentUser) {
+      return null;
+    }
+
+    return (
+      <ListItem
+        button
+        onClick={handleAvatarClick}
+        style={{ background: currentUser.color }}
+      >
+        <ListItemAvatar>
+          <Avatar
+            style={{ background: currentUser?.color }}
+          >
+            {currentUser?.avatar ?? `${currentUser?.firstName[0].toUpperCase()}${currentUser?.lastName[0].toUpperCase()}`}
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          style={{ color: '#fff' }}
+          primary={`${currentUser?.firstName} ${currentUser?.lastName}`}
+        />
+      </ListItem>
+    )
+  }
+
   function renderUser (user: IUser) {
     return (
-      <ListItem button key={user.userId}>
+      <ListItem key={user.userId}>
         <ListItemIcon>
           <Avatar
             style={{ background: user?.color }}
@@ -40,10 +74,28 @@ export default function UserList () {
     );
   }
 
+
   function renderUsers () {
     const userItems = usersData.filter(u => u).filter(u => u.userId !== currentUser.userId).map(renderUser);
     return (
       <>
+        <AvatarSelector
+          anchorEl={anchorEl}
+          color={currentUser?.color}
+          onSetColor={color => sendColorEvent(color)}
+          emoji={currentUser?.avatar}
+          onSetEmoji={avatar => sendAvatarEvent(avatar)}
+          open={avatarSelectionOpen}
+          onSetOpen={setAvatarSelectionOpen}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+        />
         <Toolbar style={{ background: '#B6BD00' }}>
           <Typography variant="h6" className={classes.title}>
             Jem-chat
@@ -52,6 +104,7 @@ export default function UserList () {
         <List
           className={classes.list}
           disablePadding>
+          {renderCurrentUser()}
           {userItems}
         </List>
       </>

@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import SimpleChatHubHandler from '../signalRHubHandler/simpleChatHubHandler';
-import { IUser, ISimpleChatClientReceiveMessage } from '../signalRHubHandler/signalRClient';
+import { IUser } from '../signalRHubHandler/signalRClient';
 
 const simpleChatAppHubHandler: SimpleChatHubHandler = new SimpleChatHubHandler('simple-chat-hub');
 
@@ -11,10 +11,19 @@ interface ISimpleChatAppHubContextValue {
   usersData: IUser[];
   onSetUser: (data: IUser) => void;
   sendMessageEvent: (message: string) => void;
+  sendColorEvent: (color: string) => void;
+  sendAvatarEvent: (avatar: string) => void;
   sendLeaveEvent: () => void;
 }
 
-export interface IMessage extends ISimpleChatClientReceiveMessage {
+export interface IMessage {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  dateTimeString: string;
+  color: string;
+  avatar: string;
+  message: string;
   isJoinOrLeaveMessage: boolean;
 }
 
@@ -29,6 +38,8 @@ export const simpleChatAppContext = createContext<ISimpleChatAppHubContextValue>
   messageData: [],
   onSetUser: () => { },
   sendMessageEvent: () => { },
+  sendColorEvent: () => { },
+  sendAvatarEvent: () => { },
   sendLeaveEvent: () => { }
 });
 
@@ -48,6 +59,7 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
       if (!user) {
         return;
       }
+
       await simpleChatAppHubHandler.initialize(user);
     } catch (error) {
       console.log(error);
@@ -62,14 +74,24 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
     simpleChatAppHubHandler.clientSendMessageEvent({ userId, message });
   }
 
+  function clientSendColorEvent (userId: string, color: string) {
+    setUser(prevState => ({ ...prevState, color }));
+    simpleChatAppHubHandler.clientSendColorEvent({ userId, color });
+  }
+
+  function clientSendAvatarEvent (userId: string, avatar: string) {
+    setUser(prevState => ({ ...prevState, avatar }));
+    simpleChatAppHubHandler.clientSendAvatarEvent({ userId, avatar });
+  }
+
   function clientSendLeaveEvent () {
     simpleChatAppHubHandler.clientSendLeave(user);
   }
 
   // Receive events
-  simpleChatAppHubHandler.receiveJoin = data => handleIncomingMessage({ userId: data.user.userId, dateTimeString: data.dateTimeString, message: `${data.user.firstName} ${data.user.lastName} joined the chat!`, isJoinOrLeaveMessage: true });
-  simpleChatAppHubHandler.receiveLeave = data => handleIncomingMessage({ userId: data.user.userId, dateTimeString: data.dateTimeString, message: `${data.user.firstName} ${data.user.lastName} left the chat!`, isJoinOrLeaveMessage: true });
-  simpleChatAppHubHandler.receiveMessage = data => handleIncomingMessage({ ...data, isJoinOrLeaveMessage: false });
+  simpleChatAppHubHandler.receiveJoin = data => handleIncomingMessage({ ...data.user, dateTimeString: data.dateTimeString, message: `${data.user.firstName} ${data.user.lastName} joined the chat!`, isJoinOrLeaveMessage: true });
+  simpleChatAppHubHandler.receiveLeave = data => handleIncomingMessage({ ...data.user, dateTimeString: data.dateTimeString, message: `${data.user.firstName} ${data.user.lastName} left the chat!`, isJoinOrLeaveMessage: true });
+  simpleChatAppHubHandler.receiveMessage = data => handleIncomingMessage({ ...data, ...users.find(u => u.userId === data.userId), isJoinOrLeaveMessage: false });
   simpleChatAppHubHandler.receiveUsers = data => setUsers(data.users);
 
   return (
@@ -80,6 +102,8 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
       usersData: users,
       onSetUser: setUser,
       sendMessageEvent: message => clientSendMessageEvent(user.userId, message),
+      sendColorEvent: color => clientSendColorEvent(user.userId, color),
+      sendAvatarEvent: avatar => clientSendAvatarEvent(user.userId, avatar),
       sendLeaveEvent: clientSendLeaveEvent
     }}>
       {children}

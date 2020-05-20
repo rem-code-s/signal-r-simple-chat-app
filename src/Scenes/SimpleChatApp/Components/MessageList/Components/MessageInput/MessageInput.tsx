@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
-import { Box, TextField, Button, makeStyles, Popover, Avatar } from '@material-ui/core';
+import { Box, TextField, Button, makeStyles, Avatar } from '@material-ui/core';
 import { simpleChatAppContext } from 'Scenes/SimpleChatApp/Context/SimpleChatAppContext';
 import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
-import { BaseEmoji, Picker } from 'emoji-mart';
+import AvatarSelector from '../AvatarSelector/AvatarSelector';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -14,7 +14,7 @@ export default function MessageInput () {
   const classes = useStyles(undefined);
   const { sendMessageEvent } = useContext(simpleChatAppContext);
   const [message, setMessage] = useState('');
-  const [avatarOpen, setAvatarOpen] = useState(false);
+  const [emojiOpen, setEmojiOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   function handleMessageChange (event: React.FormEvent<HTMLFormElement>) {
@@ -27,22 +27,19 @@ export default function MessageInput () {
     setMessage('');
   }
 
-  function handleAvatarClick (event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  function handleEmojiClick (event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     setAnchorEl(event.currentTarget);
-    setAvatarOpen(true)
+    setEmojiOpen(true)
   }
 
-  function handleEmojiClick (emoji: BaseEmoji, _e: React.MouseEvent<HTMLElement, MouseEvent>) {
-    setMessage(prevState => `${prevState}${emoji.native}`)
-    setAvatarOpen(false);
-  }
-
-  function renderPopOver () {
-    return (
-      <Popover
-        open={avatarOpen}
+  return (
+    <form onSubmit={handleMessageChange}>
+      <AvatarSelector
         anchorEl={anchorEl}
-        onClose={() => setAvatarOpen(false)}
+        onSetEmoji={emoji => setMessage(prevState => `${prevState}${emoji}`)}
+        open={emojiOpen}
+        onSetOpen={setEmojiOpen}
+        onlyShowEmoji
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'center',
@@ -51,26 +48,12 @@ export default function MessageInput () {
           vertical: 'bottom',
           horizontal: 'left',
         }}
-      >
-        <Picker
-          showSkinTones={false}
-          emoji=''
-          title=''
-          set='google'
-          showPreview={false}
-          onClick={handleEmojiClick}
-        />
-      </Popover>)
-  }
-
-  return (
-    <form onSubmit={handleMessageChange}>
+      />
       <Box p={2} display='flex'>
-        {renderPopOver()}
         <Box pr={1.5} py={1}>
           <Avatar
             style={{ margin: 'auto', cursor: 'pointer' }}
-            onClick={handleAvatarClick}>
+            onClick={handleEmojiClick}>
             <InsertEmoticonIcon />
           </Avatar>
         </Box>

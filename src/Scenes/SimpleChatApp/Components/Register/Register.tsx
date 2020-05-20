@@ -1,11 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Dialog, TextField, Button, Box, makeStyles, LinearProgress, Avatar, Popover } from '@material-ui/core';
+import { Dialog, TextField, Button, Box, makeStyles, LinearProgress, Avatar } from '@material-ui/core';
 import { simpleChatAppContext } from 'Scenes/SimpleChatApp/Context/SimpleChatAppContext';
 import { IUser } from 'Scenes/SimpleChatApp/signalRHubHandler/signalRClient';
 import { v4 as uuidv4 } from 'uuid';
-import { Picker, BaseEmoji } from 'emoji-mart'
-import { CirclePicker } from 'react-color';
 import { grey } from '@material-ui/core/colors';
+import AvatarSelector from '../MessageList/Components/AvatarSelector/AvatarSelector';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -18,32 +17,19 @@ const useStyles = makeStyles(theme => ({
     height: 64,
     fontSize: 32,
     border: `4px solid ${theme.palette.primary.main}`,
+
     '&:hover': {
       border: `4px solid ${grey[400]}`,
     },
-  },
-  popperAvatar: {
-    margin: 'auto',
-    width: 128,
-    height: 128,
-    fontSize: 64,
-  },
-  popperContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    [theme.breakpoints.down('sm')]: {
-      flexDirection: 'column',
-    }
-
   }
-}))
+}));
 
 export default function Register () {
   const classes = useStyles(undefined);
   const { currentUser, onSetUser, usersData } = useContext(simpleChatAppContext);
   const [user, setUser] = useState<IUser>(undefined);
   const [open, setOpen] = useState(true);
-  const [avatarOpen, setAvatarOpen] = useState(false);
+  const [avatarSelectionOpen, setAvatarSelectionOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
@@ -68,19 +54,19 @@ export default function Register () {
 
   function handleAvatarClick (event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     setAnchorEl(event.currentTarget);
-    setAvatarOpen(true)
+    setAvatarSelectionOpen(true)
   }
 
-  function handleEmojiClick (emoji: BaseEmoji, _e: React.MouseEvent<HTMLElement, MouseEvent>) {
-    handleUserChange({ avatar: emoji.native });
-  }
-
-  function renderPopOver () {
-    return (
-      <Popover
-        open={avatarOpen}
+  return (
+    <Dialog open={open}>
+      <AvatarSelector
         anchorEl={anchorEl}
-        onClose={() => setAvatarOpen(false)}
+        color={user?.color}
+        onSetColor={color => handleUserChange({ color })}
+        emoji={user?.avatar}
+        onSetEmoji={avatar => handleUserChange({ avatar })}
+        open={avatarSelectionOpen}
+        onSetOpen={setAvatarSelectionOpen}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'center',
@@ -89,53 +75,7 @@ export default function Register () {
           vertical: 'top',
           horizontal: 'center',
         }}
-      >
-
-        <Box >
-          <Box className={classes.popperContainer}>
-            <Box flexGrow={1}>
-              <Picker
-                showSkinTones={false}
-                emoji=''
-                title=''
-                set='google'
-                showPreview={false}
-                onClick={handleEmojiClick}
-              />
-            </Box>
-            <Box flexGrow={1} p={2} margin='0 auto'>
-              <Box>
-                <CirclePicker
-                  color={user?.color}
-                  onChangeComplete={e => handleUserChange({ color: e.hex })}
-                />
-              </Box>
-              <Box pt={3}>
-                <Avatar
-                  className={classes.popperAvatar}
-                  style={{ background: user?.color, width: 128, height: 128, fontSize: 64 }}
-                >
-                  {user?.avatar}
-                </Avatar>
-              </Box>
-            </Box>
-          </Box>
-          <Box flexGrow={1}>
-            <Button
-              onClick={() => setAvatarOpen(false)}
-              fullWidth
-              color='primary'
-              variant='contained'>
-              done
-              </Button>
-          </Box>
-        </Box>
-      </Popover>)
-  }
-
-  return (
-    <Dialog open={open}>
-      {renderPopOver()}
+      />
       <form onSubmit={handleRegister}>
         <Box p={2} display='flex'>
           <Box>

@@ -15,11 +15,15 @@ export default abstract class SignalRHubHandler {
 
   async initialize (data: IUser) {
     this.sessionInfo = data;
-
-    this.connection = new signalR.HubConnectionBuilder().withUrl(`http://sandbox.noahstolk.com/${this.hubId}?group_name=default`, { skipNegotiation: true, transport: HttpTransportType.WebSockets }).build();
+    this.connection = new signalR.HubConnectionBuilder()
+      .withUrl(`http://sandbox.noahstolk.com/${this.hubId}?group_name=default`, {
+        skipNegotiation: true,
+        transport: HttpTransportType.WebSockets
+      })
+      .build();
 
     this.initializeEvents();
-
+    // handle error
     if (this.connection.state === signalR.HubConnectionState.Disconnected) {
       await this.connection.start().then(() => { setTimeout(() => this.connectToHub(), 2000); });
     }
@@ -50,7 +54,6 @@ export default abstract class SignalRHubHandler {
   async clientSendLeave (connectionInfo: IUser) {
     try {
       await this.connection.invoke('ClientSendLeave', connectionInfo);
-      console.log('disconnected')
     } catch (error) {
       console.log(error);
     }

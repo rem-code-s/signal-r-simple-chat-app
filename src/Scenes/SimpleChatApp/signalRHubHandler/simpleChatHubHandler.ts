@@ -1,5 +1,5 @@
 import SignalRHubHandler from './signalRHubHandler';
-import { ISimpleChatClientReceiveMessage, ISimpleChatClientSendColor, ISimpleChatClientSendMessage, ISimpleChatClientReceiveUsers, IClientReceiveUser } from './signalRClient';
+import { ISimpleChatClientReceiveMessage, ISimpleChatClientSendColor, ISimpleChatClientSendMessage, ISimpleChatClientReceiveUsers, IClientReceiveUser, ISimpleChatClientSendAvatar } from './signalRClient';
 
 export default class SimpleChatHubHandler extends SignalRHubHandler {
   public receiveJoin: (clientReceiveJoinEvent: IClientReceiveUser) => void;
@@ -17,6 +17,10 @@ export default class SimpleChatHubHandler extends SignalRHubHandler {
 
   public async clientSendColorEvent (clientSendColorEvent: ISimpleChatClientSendColor) {
     await this.connection.invoke('ClientSendColor', clientSendColorEvent);
+  }
+
+  public async clientSendAvatarEvent (clientSendAvatarEvent: ISimpleChatClientSendAvatar) {
+    await this.connection.invoke('ClientSendAvatar', clientSendAvatarEvent);
   }
 
   public async clientSendMessageEvent (clientSendMessageEvent: ISimpleChatClientSendMessage) {
