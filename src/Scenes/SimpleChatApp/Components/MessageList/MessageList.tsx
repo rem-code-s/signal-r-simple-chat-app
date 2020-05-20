@@ -44,6 +44,9 @@ export default function MessageList () {
   })
 
   function renderMessage (messageData: IMessage, index: number) {
+    if (!messageData) {
+      return null;
+    }
 
     return (
       <ListItem
@@ -53,8 +56,8 @@ export default function MessageList () {
         divider
       >
         <ListItemAvatar>
-          <Avatar style={{ background: messageData?.color }}>
-            {messageData?.avatar ?? `${messageData?.firstName[0].toUpperCase()}${messageData?.lastName[0].toUpperCase()}`}
+          <Avatar style={{ background: messageData.color }}>
+            {messageData?.avatar ?? `${messageData.firstName[0].toUpperCase()}${messageData?.lastName[0].toUpperCase()}`}
           </Avatar>
         </ListItemAvatar>
         <ListItemText
