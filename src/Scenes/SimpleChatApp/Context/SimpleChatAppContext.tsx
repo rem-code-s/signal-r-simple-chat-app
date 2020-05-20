@@ -66,7 +66,7 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
     }
   }
 
-  function clientLeaveJoinEvent (data: IClientReceiveUser, message: string) {
+  function handleClientLeaveJoin (data: IClientReceiveUser, message: string) {
     let newData: IMessage = { ...data.user, dateTimeString: data.dateTimeString, message: `${data.user.firstName} ${data.user.lastName} joined the chat!`, isJoinOrLeaveMessage: true };
     if (data.user.userId === user.userId) {
       newData.message = message;
@@ -78,17 +78,26 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
     setMessages(prevState => [...prevState, data]);
   }
 
-  function handleMessageChange (userId: string, partialMessage: Partial<IMessage>) {
-    const newMessages = messages.map(message => {
+  function handleIncomingUsers (data: IUser[]) {
+    const messagesToEdit: IMessage[] = [];
 
-      if (message.userId === userId) {
-        return { ...message, ...partialMessage };
-      };
+    messages.forEach(m => {
+      data.forEach(d => {
+        if (m.userId === d.userId) {
+          messagesToEdit.push(handleMessageChange(d.userId, m, { ...d }));
+        }
+      })
+    });
 
-      return message;
-    })
+    setMessages(messagesToEdit);
+    setUsers(data);
+  }
 
-    setMessages(newMessages);
+  function handleMessageChange (userId: string, message: IMessage, partialMessage: Partial<IMessage>) {
+    if (message.userId === userId) {
+      return { ...message, ...partialMessage };
+    };
+    return message;
   };
 
   async function clientSendMessageEvent (userId: string, message: string) {
@@ -96,13 +105,13 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
   }
 
   async function clientSendColorEvent (userId: string, color: string) {
-    handleMessageChange(userId, { color });
+    // handleMessageChange(userId, { color });
     await simpleChatAppHubHandler.clientSendColorEvent({ userId, color });
     setUser(prevState => ({ ...prevState, color }));
   }
 
   async function clientSendAvatarEvent (userId: string, avatar: string) {
-    handleMessageChange(userId, { avatar });
+    // handleMessageChange(userId, { avatar });
     setUser(prevState => ({ ...prevState, avatar }));
     await simpleChatAppHubHandler.clientSendAvatarEvent({ userId, avatar });
   }
@@ -112,10 +121,10 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
   }
 
   // Receive events
-  simpleChatAppHubHandler.receiveJoin = data => clientLeaveJoinEvent(data, 'You joined the chat!');
-  simpleChatAppHubHandler.receiveLeave = data => clientLeaveJoinEvent(data, 'You left the chat!');
+  simpleChatAppHubHandler.receiveJoin = data => handleClientLeaveJoin(data, 'You joined the chat!');
+  simpleChatAppHubHandler.receiveLeave = data => handleClientLeaveJoin(data, 'You left the chat!');
   simpleChatAppHubHandler.receiveMessage = data => handleIncomingMessage({ ...data, ...users.find(u => u.userId === data.userId), isJoinOrLeaveMessage: false });
-  simpleChatAppHubHandler.receiveUsers = data => setUsers(data.users);
+  simpleChatAppHubHandler.receiveUsers = data => handleIncomingUsers(data.users);
 
   return (
     <simpleChatAppContext.Provider value={{
