@@ -18,22 +18,9 @@ const useStyles = makeStyles({
 
 export default function UserList () {
   const classes = useStyles(undefined);
-  const { currentUser, sendLeaveEvent, usersData, sendColorEvent, sendAvatarEvent } = useContext(simpleChatAppContext);
+  const { currentUser, usersData, sendColorEvent, sendAvatarEvent } = useContext(simpleChatAppContext);
   const [avatarSelectionOpen, setAvatarSelectionOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-
-  // these functions don't work for firefox
-  window.onbeforeunload = function () {
-    if (currentUser) {
-      sendLeaveEvent();
-    }
-  };
-
-  window.onhashchange = function () {
-    if (currentUser) {
-      sendLeaveEvent();
-    }
-  }
 
   function handleAvatarClick (event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     setAnchorEl(event.currentTarget);
@@ -47,6 +34,7 @@ export default function UserList () {
 
     return (
       <ListItem
+        divider
         button
         onClick={handleAvatarClick}
         style={{ background: currentUser.color }}
@@ -59,7 +47,7 @@ export default function UserList () {
           </Avatar>
         </ListItemAvatar>
         <ListItemText
-          style={{ color: '#fff' }}
+          style={{ color: currentUser.color ? '#fff' : '#000' }}
           primary={`${currentUser?.firstName} ${currentUser?.lastName}`}
         />
       </ListItem>

@@ -1577,6 +1577,11 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.4.tgz#38fd73ddfd9b55abb1e1b2ed578cb55bd7b7d339"
   integrity sha512-8+KAKzEvSUdeo+kmqnKrqgeE+LcA0tjYWFY7RPProVYwnqDjukzO+3b6dLD56rYX5TdWejnEOLJYOIeh4CXKuA==
 
+"@types/lodash@^4.14.152":
+  version "4.14.152"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.152.tgz#7e7679250adce14e749304cdb570969f77ec997c"
+  integrity sha512-Vwf9YF2x1GE3WNeUMjT5bTHa2DqgUo87ocdgTScupY2JclZ5Nn7W2RLM/N0+oreexUk8uaVugR81NnTY/jNNXg==
+
 "@types/minimatch@*":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
@@ -3942,11 +3947,6 @@ emoji-mart@^3.0.0:
   dependencies:
     "@babel/runtime" "^7.0.0"
     prop-types "^15.6.0"
-
-emoji-picker-react@^3.1.6:
-  version "3.1.6"
-  resolved "https://registry.yarnpkg.com/emoji-picker-react/-/emoji-picker-react-3.1.6.tgz#004ae3bef22e700b314d8a73274eaacde34f010d"
-  integrity sha512-2iACwlf9UqCLY+7UL6iXH3zeDj4RA4Cdm5t2Sj7Ub4QSJPR1GhbW8ldoutADPnxu4Wf1X3Uy9m2HqdoaNC/9eQ==
 
 emoji-regex@^7.0.1, emoji-regex@^7.0.2:
   version "7.0.3"

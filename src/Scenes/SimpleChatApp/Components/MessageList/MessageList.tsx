@@ -32,9 +32,23 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function MessageList () {
-  const { messageData } = useContext(simpleChatAppContext);
+  const { currentUser, messageData, sendLeaveEvent } = useContext(simpleChatAppContext);
   const classes = useStyles(undefined);
   const ref = createRef<HTMLLIElement>();
+
+  // these functions don't work for firefox
+  window.onbeforeunload = function () {
+    if (currentUser) {
+      sendLeaveEvent();
+    }
+  };
+
+  window.onhashchange = function () {
+    if (currentUser) {
+      sendLeaveEvent();
+    }
+  }
+
 
   useEffect(() => {
     ref?.current?.scrollIntoView({
@@ -44,25 +58,25 @@ export default function MessageList () {
   })
 
   function renderMessage (messageData: IMessage, index: number) {
-    if (!messageData) {
+    const { firstName, lastName, color, avatar, dateTimeString, isJoinOrLeaveMessage } = messageData;
+    if (!firstName || !lastName || !dateTimeString) {
       return null;
     }
-
     return (
       <ListItem
         style={{ background: messageData?.isJoinOrLeaveMessage && messageData?.color }}
         ref={ref}
-        key={`${messageData.userId}-${index}`}
+        key={`${messageData?.userId}-${index}`}
         divider
       >
         <ListItemAvatar>
-          <Avatar style={{ background: messageData.color }}>
-            {messageData?.avatar ?? `${messageData.firstName[0].toUpperCase()}${messageData?.lastName[0].toUpperCase()}`}
+          <Avatar style={{ background: color }}>
+            {avatar ?? `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`}
           </Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={messageData.message}
-          secondary={!messageData?.isJoinOrLeaveMessage ? `${messageData?.firstName} ${messageData?.lastName} - ${messageData.dateTimeString.split(' ')[1]}` : null}
+          secondary={!isJoinOrLeaveMessage ? `${firstName} ${lastName} - ${dateTimeString.split(' ')[1]}` : null}
         />
       </ListItem>
     );
