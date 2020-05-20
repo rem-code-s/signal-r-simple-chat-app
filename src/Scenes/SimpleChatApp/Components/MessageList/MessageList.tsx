@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function MessageList () {
-  const { currentUser, messageData } = useContext(simpleChatAppContext);
+  const { messageData } = useContext(simpleChatAppContext);
   const classes = useStyles(undefined);
   const ref = createRef<HTMLLIElement>();
 
@@ -44,9 +44,6 @@ export default function MessageList () {
   })
 
   function renderMessage (messageData: IMessage, index: number) {
-    if (messageData.userId === currentUser.userId && messageData.isJoinOrLeaveMessage) {
-      return null;
-    }
 
     return (
       <ListItem
