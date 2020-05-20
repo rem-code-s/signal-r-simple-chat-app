@@ -16,7 +16,7 @@ const useStyles = makeStyles({
 
 export default function UserList () {
   const classes = useStyles(undefined);
-  const { sendLeaveEvent, usersData } = useContext(simpleChatAppContext);
+  const { currentUser, sendLeaveEvent, usersData } = useContext(simpleChatAppContext);
 
   // these functions don't work for firefox
   window.onbeforeunload = function () {
@@ -41,7 +41,7 @@ export default function UserList () {
   }
 
   function renderUsers () {
-    const userItems = usersData.filter(u => u).map(renderUser);
+    const userItems = usersData.filter(u => u).filter(u => u.userId !== currentUser.userId).map(renderUser);
     return (
       <>
         <Toolbar style={{ background: '#B6BD00' }}>

@@ -30,7 +30,7 @@ const useStyles = makeStyles({
 })
 
 export default function MessageList () {
-  const { messageData, usersData } = useContext(simpleChatAppContext);
+  const { currentUser, messageData, usersData } = useContext(simpleChatAppContext);
   const classes = useStyles(undefined);
   const ref = createRef<HTMLLIElement>();
 
@@ -40,6 +40,27 @@ export default function MessageList () {
       block: 'start',
     });
   })
+
+  function renderCurrentUser () {
+    if (!currentUser) {
+      return null;
+    }
+    return (
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar
+            style={{ background: currentUser?.color }}
+          >
+            {currentUser?.avatar ?? `${currentUser?.firstName[0].toUpperCase()}${currentUser?.lastName[0].toUpperCase()}`}
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          style={{ color: '#fff' }}
+          primary={`${currentUser?.firstName} ${currentUser?.lastName}`}
+        />
+      </ListItem>
+    )
+  }
 
   function renderMessage (messageData: ISimpleChatClientReceiveMessage, index: number) {
     const user = usersData.find(u => u.userId === messageData.userId);
@@ -85,11 +106,16 @@ export default function MessageList () {
   return (
     <Box className={classes.container}>
       <Toolbar style={{ background: '#B6BD00' }}>
-        <Hidden smUp>
-          <Typography variant="h6" className={classes.title}>
-            Jem-chat
+        <Box flexGrow={1}>
+          <Hidden smUp>
+            <Typography variant="h6" className={classes.title}>
+              Jem-chat
           </Typography>
-        </Hidden>
+          </Hidden>
+        </Box>
+        <Box>
+          {renderCurrentUser()}
+        </Box>
       </Toolbar>
       <Box className={classes.messagesContainer}>
         {renderMessages()}
