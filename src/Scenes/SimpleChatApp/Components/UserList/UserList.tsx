@@ -3,12 +3,15 @@ import { List, ListItem, ListItemIcon, Avatar, ListItemText, makeStyles, Typogra
 import { simpleChatAppContext } from 'Scenes/SimpleChatApp/Context/SimpleChatAppContext';
 import { IUser } from 'Scenes/SimpleChatApp/signalRHubHandler/signalRClient';
 import AvatarSelector from '../MessageList/Components/AvatarSelector/AvatarSelector';
+import { grey } from '@material-ui/core/colors';
 
 const useStyles = makeStyles({
   list: {
     height: 'calc(100vh - 64px)',
     width: 300,
-    overflow: 'auto'
+    overflow: 'auto',
+    borderRight: `1px solid ${grey[500]}`
+
   },
   title: {
     flexGrow: 1,
