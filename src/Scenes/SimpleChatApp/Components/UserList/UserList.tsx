@@ -24,11 +24,15 @@ export default function UserList () {
 
   // these functions don't work for firefox
   window.onbeforeunload = function () {
-    sendLeaveEvent();
+    if (currentUser) {
+      sendLeaveEvent();
+    }
   };
 
   window.onhashchange = function () {
-    sendLeaveEvent();
+    if (currentUser) {
+      sendLeaveEvent();
+    }
   }
 
   function handleAvatarClick (event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
