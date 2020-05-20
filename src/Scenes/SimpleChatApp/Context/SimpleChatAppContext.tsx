@@ -95,7 +95,7 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
 
     const messagesToEdit = messages.map(m => {
       const user = data.find(d => d.userId === m.userId);
-      return handleMessageChange(user.userId, m, { ...user });
+      return handleMessageChange(m.userId, m, { ...user });
     });
 
     setMessages(messagesToEdit);
