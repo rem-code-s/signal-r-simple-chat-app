@@ -6,8 +6,9 @@ import AvatarSelector from '../MessageList/Components/AvatarSelector/AvatarSelec
 
 const useStyles = makeStyles({
   list: {
-    height: 'calc(100% - 64px)',
+    height: 'calc(100vh - 64px)',
     width: 300,
+    overflow: 'auto'
   },
   title: {
     flexGrow: 1,
