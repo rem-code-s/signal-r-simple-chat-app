@@ -2,10 +2,9 @@ import React, { useContext, createRef, useEffect } from 'react';
 import { makeStyles, Box, ListItem, ListItemText, List, Toolbar, Hidden, Typography, ListItemAvatar, Avatar } from '@material-ui/core';
 import { grey } from '@material-ui/core/colors';
 import MessageInput from './Components/MessageInput/MessageInput';
-import { simpleChatAppContext } from 'Scenes/SimpleChatApp/Context/SimpleChatAppContext';
-import { ISimpleChatClientReceiveMessage } from 'Scenes/SimpleChatApp/signalRHubHandler/signalRClient';
+import { simpleChatAppContext, IMessage } from 'Scenes/SimpleChatApp/Context/SimpleChatAppContext';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   container: {
     background: grey[200],
     height: '100vh',
@@ -17,6 +16,9 @@ const useStyles = makeStyles({
   messagesContainer: {
     overflow: 'auto',
     height: 'calc(100% - 88px - 64px)',
+    [theme.breakpoints.down('sm')]: {
+      height: 'calc(100% - 80px - 64px)',
+    }
   },
   messageInput: {
     background: grey[300],
@@ -27,7 +29,7 @@ const useStyles = makeStyles({
     flexGrow: 1,
     color: '#fff'
   },
-})
+}))
 
 export default function MessageList () {
   const { currentUser, messageData, usersData } = useContext(simpleChatAppContext);
@@ -62,24 +64,27 @@ export default function MessageList () {
     )
   }
 
-  function renderMessage (messageData: ISimpleChatClientReceiveMessage, index: number) {
+  function renderMessage (messageData: IMessage, index: number) {
     const user = usersData.find(u => u.userId === messageData.userId);
+    if (messageData.userId === currentUser.userId && messageData.isJoinOrLeaveMessage) {
+      return null;
+    }
+
     return (
       <ListItem
+        style={{ background: messageData?.isJoinOrLeaveMessage && user?.color }}
         ref={ref}
         key={`${messageData.userId}-${index}`}
         divider
       >
         <ListItemAvatar>
-          <Avatar
-            style={{ background: user?.color }}
-          >
+          <Avatar style={{ background: user?.color }}>
             {user?.avatar ?? `${user?.firstName[0].toUpperCase()}${user?.lastName[0].toUpperCase()}`}
           </Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={messageData.message}
-          secondary={`${user?.firstName} ${user?.lastName} - ${messageData.dateTimeString.split(' ')[1]}`}
+          secondary={!messageData?.isJoinOrLeaveMessage ? `${user?.firstName} ${user?.lastName} - ${messageData.dateTimeString.split(' ')[1]}` : null}
         />
       </ListItem>
     );

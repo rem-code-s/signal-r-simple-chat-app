@@ -1,3 +1,5 @@
+import 'emoji-mart/css/emoji-mart.css'
+
 import React from 'react';
 import { Box, Hidden } from '@material-ui/core';
 import UserList from 'Scenes/SimpleChatApp/Components/UserList/UserList';

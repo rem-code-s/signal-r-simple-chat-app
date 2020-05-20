@@ -7,11 +7,15 @@ const simpleChatAppHubHandler: SimpleChatHubHandler = new SimpleChatHubHandler('
 interface ISimpleChatAppHubContextValue {
   simpleChatAppHubHandler: SimpleChatHubHandler;
   currentUser: IUser;
-  messageData: ISimpleChatClientReceiveMessage[];
+  messageData: IMessage[];
   usersData: IUser[];
   onSetUser: (data: IUser) => void;
   sendMessageEvent: (message: string) => void;
   sendLeaveEvent: () => void;
+}
+
+export interface IMessage extends ISimpleChatClientReceiveMessage {
+  isJoinOrLeaveMessage: boolean;
 }
 
 interface IProps {
@@ -31,7 +35,7 @@ export const simpleChatAppContext = createContext<ISimpleChatAppHubContextValue>
 export default function SimpleChatAppHubContextProvider (props: IProps) {
   const { children } = props;
   const [user, setUser] = useState<IUser>(undefined);
-  const [messages, setMessages] = useState<ISimpleChatClientReceiveMessage[]>([]);
+  const [messages, setMessages] = useState<IMessage[]>([]);
   const [users, setUsers] = useState<IUser[]>([]);
 
   useEffect(() => {
@@ -50,7 +54,7 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
     }
   }
 
-  function handleIncomingMessage (data: ISimpleChatClientReceiveMessage) {
+  function handleIncomingMessage (data: IMessage) {
     setMessages(prevState => [...prevState, data]);
   }
 
@@ -63,9 +67,9 @@ export default function SimpleChatAppHubContextProvider (props: IProps) {
   }
 
   // Receive events
-  simpleChatAppHubHandler.receiveJoin = data => handleIncomingMessage({ userId: data.user.userId, dateTimeString: data.dateTimeString, message: `${data.user.firstName} ${data.user.lastName} joined the chat!` });
-  simpleChatAppHubHandler.receiveLeave = data => handleIncomingMessage({ userId: data.user.userId, dateTimeString: data.dateTimeString, message: `${data.user.firstName} ${data.user.lastName} left the chat!` });
-  simpleChatAppHubHandler.receiveMessage = data => handleIncomingMessage(data);
+  simpleChatAppHubHandler.receiveJoin = data => handleIncomingMessage({ userId: data.user.userId, dateTimeString: data.dateTimeString, message: `${data.user.firstName} ${data.user.lastName} joined the chat!`, isJoinOrLeaveMessage: true });
+  simpleChatAppHubHandler.receiveLeave = data => handleIncomingMessage({ userId: data.user.userId, dateTimeString: data.dateTimeString, message: `${data.user.firstName} ${data.user.lastName} left the chat!`, isJoinOrLeaveMessage: true });
+  simpleChatAppHubHandler.receiveMessage = data => handleIncomingMessage({ ...data, isJoinOrLeaveMessage: false });
   simpleChatAppHubHandler.receiveUsers = data => setUsers(data.users);
 
   return (

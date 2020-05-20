@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { Box, TextField, Button, makeStyles, Popover, Avatar } from '@material-ui/core';
 import { simpleChatAppContext } from 'Scenes/SimpleChatApp/Context/SimpleChatAppContext';
-import Picker, { IEmojiData } from 'emoji-picker-react';
 import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
+import { BaseEmoji, Picker } from 'emoji-mart';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -32,8 +32,8 @@ export default function MessageInput () {
     setAvatarOpen(true)
   }
 
-  function handleEmojiClick (_event: MouseEvent, data: IEmojiData) {
-    setMessage(prevState => `${prevState}${data.emoji}`)
+  function handleEmojiClick (emoji: BaseEmoji, _e: React.MouseEvent<HTMLElement, MouseEvent>) {
+    setMessage(prevState => `${prevState}${emoji.native}`)
     setAvatarOpen(false);
   }
 
@@ -48,11 +48,18 @@ export default function MessageInput () {
           horizontal: 'center',
         }}
         transformOrigin={{
-          vertical: 'center',
-          horizontal: 'center',
+          vertical: 'bottom',
+          horizontal: 'left',
         }}
       >
-        <Picker onEmojiClick={handleEmojiClick} />
+        <Picker
+          showSkinTones={false}
+          emoji=''
+          title=''
+          set='google'
+          showPreview={false}
+          onClick={handleEmojiClick}
+        />
       </Popover>)
   }
 

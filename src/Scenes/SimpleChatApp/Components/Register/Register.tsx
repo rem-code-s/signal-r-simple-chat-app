@@ -3,7 +3,7 @@ import { Dialog, TextField, Button, Box, makeStyles, LinearProgress, Avatar, Pop
 import { simpleChatAppContext } from 'Scenes/SimpleChatApp/Context/SimpleChatAppContext';
 import { IUser } from 'Scenes/SimpleChatApp/signalRHubHandler/signalRClient';
 import { v4 as uuidv4 } from 'uuid';
-import Picker, { IEmojiData } from 'emoji-picker-react';
+import { Picker, BaseEmoji } from 'emoji-mart'
 import { CirclePicker } from 'react-color';
 import { grey } from '@material-ui/core/colors';
 
@@ -28,6 +28,14 @@ const useStyles = makeStyles(theme => ({
     height: 128,
     fontSize: 64,
   },
+  popperContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+    }
+
+  }
 }))
 
 export default function Register () {
@@ -63,8 +71,8 @@ export default function Register () {
     setAvatarOpen(true)
   }
 
-  function handleEmojiClick (_event: MouseEvent, data: IEmojiData) {
-    handleUserChange({ avatar: data.emoji });
+  function handleEmojiClick (emoji: BaseEmoji, _e: React.MouseEvent<HTMLElement, MouseEvent>) {
+    handleUserChange({ avatar: emoji.native });
   }
 
   function renderPopOver () {
@@ -83,20 +91,26 @@ export default function Register () {
         }}
       >
 
-        <Box>
-          <Box display='flex'>
-
+        <Box >
+          <Box className={classes.popperContainer}>
             <Box flexGrow={1}>
-              <Picker onEmojiClick={handleEmojiClick} />
+              <Picker
+                showSkinTones={false}
+                emoji=''
+                title=''
+                set='google'
+                showPreview={false}
+                onClick={handleEmojiClick}
+              />
             </Box>
-            <Box flexGrow={1} p={2}>
+            <Box flexGrow={1} p={2} margin='0 auto'>
               <Box>
                 <CirclePicker
                   color={user?.color}
                   onChangeComplete={e => handleUserChange({ color: e.hex })}
                 />
               </Box>
-              <Box pt={4}>
+              <Box pt={3}>
                 <Avatar
                   className={classes.popperAvatar}
                   style={{ background: user?.color, width: 128, height: 128, fontSize: 64 }}
