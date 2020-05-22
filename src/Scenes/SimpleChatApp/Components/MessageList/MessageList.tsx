@@ -75,7 +75,7 @@ export default function MessageList () {
           </Avatar>
         </ListItemAvatar>
         <ListItemText
-          primary={messageData.message}
+          primary={<p style={{ wordBreak: 'break-all' }}>{messageData.message}</p>}
           secondary={!isJoinOrLeaveMessage ? `${firstName} ${lastName} - ${dateTimeString.split(' ')[1]}` : null}
         />
       </ListItem>
